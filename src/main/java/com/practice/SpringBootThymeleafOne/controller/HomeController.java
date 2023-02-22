@@ -4,6 +4,7 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -21,6 +22,9 @@ import jakarta.servlet.http.HttpSessionEvent;
 
 @Controller
 public class HomeController {
+	
+	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
 	
 	@Autowired
 	private UserRepository userRepository;
@@ -51,17 +55,21 @@ public class HomeController {
 	public String registerUser(@ModelAttribute("user") User user, @RequestParam(value="agreement",
 		defaultValue="false") boolean agreement, Model model, HttpServletRequest request)
 	{
+		boolean displayError = false;
 		try {
 			jakarta.servlet.http.HttpSession session = request.getSession();
+			
 			if(!agreement)
 			{
 				System.out.println("You have not agreed the terms and conditions.");
+				displayError = true;
 				throw new Exception("You have not agreed the terms and conditions.");
 			}
 			
 			user.setRole("ROLE_USER");
 			user.setEnabled(true);
 			user.setImageUrl("default.png");
+			user.setPassword(passwordEncoder.encode(user.getPassword()));
 			
 			System.out.println("Agreement "+agreement);
 			System.out.println("User "+user);
@@ -78,8 +86,9 @@ public class HomeController {
 			e.printStackTrace();
 			model.addAttribute("user",user);
 			jakarta.servlet.http.HttpSession session = request.getSession();
+			if (displayError) {
 			session.setAttribute("message", new Message("Something went wrong."+e.getMessage(),"alert-danger"));
-			return "signup";
+			}return "signup";
 		}
 		
 	}

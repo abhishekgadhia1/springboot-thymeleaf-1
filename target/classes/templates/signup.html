@@ -59,7 +59,7 @@
 							</div>
 
 							<div class="mb-3">
-								<textarea name="about" th:value="${user.about}" rows="5"
+								<textarea th:field="*{about}" name="about" th:value="${user.about}" rows="5"
 									placeholder="Enter something about yourself"
 									class="form-control"></textarea>
 							</div>
