@@ -125,6 +125,13 @@ public class UserController {
 		return "redirect:/user/show-contacts";
 	}
 	
+	//open update form handler
+	@PostMapping("/update-contact/{cid}")
+	public String updateForm(Model model)
+	{
+		model.addAttribute("title","Update Contact");
+		return "update_form";
+	}
 	
 	
 	
