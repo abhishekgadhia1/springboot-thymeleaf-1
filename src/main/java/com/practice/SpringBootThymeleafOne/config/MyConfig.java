@@ -13,46 +13,47 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
-public class MyConfig{
-	
+public class MyConfig {
+
 	@Bean
-	public UserDetailsService getUserDetailService()
-	{
+	public UserDetailsService getUserDetailService() {
 		return new UserDetailsServiceImpl();
 	}
-	
+
 	@Bean
-	public BCryptPasswordEncoder passwordEncoder()
-	{
+	public BCryptPasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
-	
+
 	@Bean
-	public DaoAuthenticationProvider authenticationProvider()
-	{
+	public DaoAuthenticationProvider authenticationProvider() {
 		DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
 		daoAuthenticationProvider.setUserDetailsService(this.getUserDetailService());
 		daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
-		
+
 		return daoAuthenticationProvider;
 	}
-	
-	 @Bean
-	    public AuthenticationManager authenticationManager(
-	            AuthenticationConfiguration authenticationConfiguration) throws Exception {
-	        return authenticationConfiguration.getAuthenticationManager();
-	    }
 
-	    @Bean
-	    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-	        http.authorizeRequests()
-	                .requestMatchers("/admin/**").hasRole("ADMIN")
-	                .requestMatchers("/user/**").hasRole("USER")
-	                .requestMatchers("/**").permitAll().and().formLogin().and().csrf().disable();
+	@Bean
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+			throws Exception {
+		return authenticationConfiguration.getAuthenticationManager();
+	}
 
-	        http.formLogin().defaultSuccessUrl("/user/index", true);
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+		http.authorizeRequests().requestMatchers("/admin/**").hasRole("ADMIN").requestMatchers("/user/**")
+				.hasRole("USER").requestMatchers("/**").permitAll().and().formLogin()
+				.loginPage("/signin")
+				.loginProcessingUrl("/dologin")
+				.defaultSuccessUrl("/user/index")
+//				.failureUrl("/login-fail")
+				.and().csrf()
+				.disable();
 
-	        return http.build();
-	    }
+		http.formLogin().defaultSuccessUrl("/user/index", true);
+
+		return http.build();
+	}
 
 }
