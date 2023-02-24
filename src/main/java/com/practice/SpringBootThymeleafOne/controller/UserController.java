@@ -127,10 +127,12 @@ public class UserController {
 	
 	//open update form handler
 	@PostMapping("/update-contact/{cid}")
-	public String updateForm(Model model)
+	public String updateForm(@PathVariable("cid") Integer cid, Model model)
 	{
 		model.addAttribute("title","Update Contact");
-		return "update_form";
+		Contact contact = this.contactRepository.findById(cid).get();
+		model.addAttribute("contact", contact);
+		return "normal/update_form";
 	}
 	
 	
