@@ -7,11 +7,15 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.practice.SpringBootThymeleafOne.dao.ContactRepository;
 import com.practice.SpringBootThymeleafOne.dao.UserRepository;
@@ -136,7 +140,36 @@ public class UserController {
 	}
 	
 	
-	
+	//update contact handler
+	@RequestMapping(value = "/process-update", method = RequestMethod.POST)
+	public String updateHandler(@ModelAttribute Contact contact, @RequestParam("profileImage") MultipartFile file, Model model, HttpSession session, Principal principal)
+	{
+		try {
+			
+			
+			if(!file.isEmpty())
+			{
+				//file work...
+				//rewrite
+				
+			}
+			
+			User user = this.userRepository.getUserByUserName(principal.getName());
+			
+			contact.setUser(user);
+			
+			this.contactRepository.save(contact);
+			
+			session.setAttribute("message", new Message("Your contact is updated...", "success"));
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("CONTACT NAME "+contact.getName());
+		System.out.println("CONTACT ID "+contact.getcId());
+		return "redirect:/user/show-contacts";
+	}
 	
 	
 	
